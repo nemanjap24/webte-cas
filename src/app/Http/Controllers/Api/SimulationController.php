@@ -26,14 +26,13 @@ class SimulationController extends Controller
         $result = $simulationService->runInvertedPendulum($targetPosition);
 
         if ($result['success']) {
-            $userToken = $request->cookie('webte-cas-session');
+            $userToken = $request->cookie('cas_session_token');
 
             if ($userToken) {
                 $animationUsageService->record(
                     $userToken,
                     'inverted-pendulum',
-                    null,
-                    null
+                    $request->ip()
                 );
             }
         }
@@ -65,14 +64,13 @@ class SimulationController extends Controller
         $result = $simulationService->runBallBeam($targetPosition);
 
         if ($result['success']) {
-            $userToken = $request->cookie('webte-cas-session');
+            $userToken = $request->cookie('cas_session_token');
 
             if ($userToken) {
                 $animationUsageService->record(
                     $userToken,
                     'ball-beam',
-                    null,
-                    null
+                    $request->ip()
                 );
             }
         }

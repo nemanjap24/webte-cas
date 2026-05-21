@@ -35,32 +35,32 @@
                             <th class="px-6 py-4 font-semibold">Time</th>
                             <th class="px-6 py-4 font-semibold">Animation</th>
                             <th class="px-6 py-4 font-semibold">Location</th>
-                            <th class="px-6 py-4 font-semibold">IP Address</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         @forelse($recent as $item)
                         <tr class="hover:bg-white/[0.02] transition">
                             <td class="whitespace-nowrap px-6 py-4 text-slate-400">
-                                {{ $item->created_at->format('Y-m-d H:i') }}
+                                {{ $item->used_at->format('Y-m-d H:i') }}
                             </td>
                             <td class="px-6 py-4">
-                                @if($item->animation_name === 'pendulum')
+                                @if($item->animation_type === 'inverted-pendulum')
                                     <span class="rounded-full bg-cyan-400/10 px-2.5 py-0.5 text-[11px] font-bold text-cyan-400 uppercase">Pendulum</span>
                                 @else
                                     <span class="rounded-full bg-emerald-400/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400 uppercase">Ball & Beam</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-white">{{ $item->city }}</span>, <span class="text-slate-500">{{ $item->country }}</span>
-                            </td>
-                            <td class="px-6 py-4 font-mono text-[11px] text-slate-500">
-                                {{ $item->ip_address }}
+                                @if($item->city || $item->country)
+                                    <span class="text-white">{{ $item->city ?? 'Unknown' }}</span>, <span class="text-slate-500">{{ $item->country ?? 'Unknown' }}</span>
+                                @else
+                                    <span class="text-slate-500 italic">Location data unavailable</span>
+                                @endif
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-20 text-center italic text-slate-500">
+                            <td colspan="3" class="px-6 py-20 text-center italic text-slate-500">
                                 No activity recorded yet.
                             </td>
                         </tr>

@@ -10,12 +10,11 @@ Route::get('/', function () {
 });
 
 Route::get('/console', function () {
-    // Implement anonymous token in cookies as per requirement (11)
     $sessionToken = request()->cookie('cas_session_token');
     
     if (!$sessionToken) {
         $sessionToken = Str::uuid()->toString();
-        cookie()->queue('cas_session_token', $sessionToken, 60 * 24 * 30); // 30 days
+        cookie()->queue('cas_session_token', $sessionToken, 60 * 24 * 30);
     }
 
     return view('console', [
@@ -25,6 +24,12 @@ Route::get('/console', function () {
 });
 
 Route::get('/animations', function () {
+    $sessionToken = request()->cookie('cas_session_token');
+    
+    if (!$sessionToken) {
+        cookie()->queue('cas_session_token', Str::uuid()->toString(), 60 * 24 * 30);
+    }
+
     return view('animations', [
         'apiKey' => config('cas.api_key')
     ]);
@@ -39,9 +44,9 @@ Route::get('/logs/export', [\App\Http\Controllers\Api\LogController::class, 'exp
 
 Route::get('/stats', function () {
     $stats = [
-        'pendulum_count' => \App\Models\AnimationStatistic::where('animation_name', 'pendulum')->count(),
-        'ball_count' => \App\Models\AnimationStatistic::where('animation_name', 'ball')->count(),
-        'recent' => \App\Models\AnimationStatistic::orderByDesc('created_at')->limit(50)->get(),
+        'pendulum_count' => \App\Models\AnimationUsage::where('animation_type', 'inverted-pendulum')->count(),
+        'ball_count' => \App\Models\AnimationUsage::where('animation_type', 'ball-beam')->count(),
+        'recent' => \App\Models\AnimationUsage::orderByDesc('used_at')->limit(50)->get(),
     ];
     return view('stats', $stats);
 })->name('stats');
