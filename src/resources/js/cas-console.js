@@ -1,0 +1,124 @@
+import { EditorView, basicSetup } from "codemirror"
+import { keymap } from "@codemirror/view"
+import { indentWithTab } from "@codemirror/commands"
+import { oneDark } from "@codemirror/theme-one-dark"
+import { StreamLanguage } from "@codemirror/language"
+// Octave doesn't have a direct CM6 package yet, we use a simple fallback or legacy
+// For now, let's use a generic approach as per CM6 docs for custom/legacy modes
+// but we'll stick to basic setup for stability.
+
+document.addEventListener('DOMContentLoaded', () => {
+    const casForm = document.getElementById('cas-form');
+    const editorContainer = document.getElementById('editor-container');
+    if (!casForm || !editorContainer) return;
+
+    const runBtn = document.getElementById('run-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const errorDiv = document.getElementById('error-message');
+    const lastBatchDiv = document.getElementById('last-batch-output');
+
+    // Samples data
+    const samples = {
+        ball: `% Ball & Beam quick sample\nr = 0.25\na = 1+1\na+2\nr*4`,
+        pendulum: `% Inverted pendulum quick sample\nx = 0.2\ntheta = 0\nx + 0.3\ntheta + 1`
+    };
+
+    // Configuration
+    const config = {
+        sessionToken: casForm.dataset.sessionToken,
+        apiKey: casForm.dataset.apiKey,
+        labels: {
+            run: runBtn.dataset.labelRun,
+            running: runBtn.dataset.labelRunning
+        }
+    };
+
+    // Initialize CodeMirror 6
+    const editor = new EditorView({
+        doc: samples.ball,
+        extensions: [
+            basicSetup,
+            keymap.of([indentWithTab]),
+            oneDark,
+            EditorView.lineWrapping
+        ],
+        parent: editorContainer
+    });
+
+    // Global function replacement for sample loading
+    window.loadCasSample = (type) => {
+        if (samples[type]) {
+            editor.dispatch({
+                changes: { from: 0, to: editor.state.doc.length, insert: samples[type] }
+            });
+        }
+    };
+
+    // Clear button logic
+    clearBtn.addEventListener('click', () => {
+        editor.dispatch({
+            changes: { from: 0, to: editor.state.doc.length, insert: "" }
+        });
+    });
+
+    // Event listener for form submission
+    casForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const script = editor.state.doc.toString();
+        if (!script.trim()) return;
+        
+        runBtn.disabled = true;
+        runBtn.innerText = config.labels.running;
+        errorDiv.classList.add('hidden');
+        
+        try {
+            const response = await fetch('/api/cas/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                    'X-API-KEY': config.apiKey
+                },
+                body: JSON.stringify({
+                    command: script,
+                    session_token: config.sessionToken
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Server error');
+            }
+
+            // Append to output
+            const row = document.createElement('div');
+            row.className = "rounded border border-white/10 p-2 bg-white/5";
+            row.innerHTML = `
+                <p class="text-slate-400 whitespace-pre-wrap">&gt; ${escapeHtml(script)}</p>
+                <p class="text-emerald-200 whitespace-pre-wrap">${escapeHtml(data.output)}</p>
+            `;
+            
+            // Clear current output if it's the first one, then prepend
+            if (lastBatchDiv.querySelector('p.italic')) {
+                lastBatchDiv.innerHTML = '';
+            }
+            lastBatchDiv.prepend(row);
+            
+        } catch (err) {
+            errorDiv.innerText = err.message;
+            errorDiv.classList.remove('hidden');
+        } finally {
+            runBtn.disabled = false;
+            runBtn.innerText = config.labels.run;
+        }
+    });
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+});

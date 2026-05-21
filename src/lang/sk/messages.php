@@ -40,4 +40,27 @@ return [
     'outputHistory' => 'História výstupov (logy)',
     'vars' => 'Uložené premenné relácie',
     'back' => 'Späť na úvod',
+
+    // Navigácia
+    'nav' => [
+        'home' => 'Domov',
+        'console' => 'Konzola',
+        'animations' => 'Animácie',
+        'logs' => 'Logy',
+        'stats' => 'Štatistiky',
+        'api_docs' => 'API Dokumentácia',
+    ],
+
+    // Stránka animácií
+    'animations_title' => 'Simulácie systémov',
+    'animations_subtitle' => 'Interaktívne animácie dynamických systémov so synchronizovanými grafmi.',
+
+    // Stránka logov
+    'logs_title' => 'História požiadaviek',
+    'logs_subtitle' => 'Všetky interakcie s CAS sú tu zaznamenané a dostupné pre export do CSV.',
+    'export_csv' => 'Exportovať do CSV',
+
+    // Stránka štatistík
+    'stats_title' => 'Štatistiky používania',
+    'stats_subtitle' => 'Prehľad používania simulácií všetkými používateľmi.',
 ];
