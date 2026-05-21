@@ -3,21 +3,9 @@
 @section('title', __('messages.console_title'))
 
 @section('content')
-<main class="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
+<main class="px-6 py-10 text-slate-100">
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <header class="flex flex-wrap items-center justify-between gap-3">
-            <h1 class="text-3xl font-bold">{{ __('messages.console_title') }}</h1>
-            <div class="rounded-lg border border-white/15 bg-white/5 p-1 text-sm">
-                <a href="{{ route('lang.switch', 'sk') }}" 
-                   class="inline-block rounded-md px-3 py-1.5 {{ app()->getLocale() === 'sk' ? 'bg-white text-slate-900' : 'text-slate-200 hover:bg-white/10' }}">
-                    SK
-                </a>
-                <a href="{{ route('lang.switch', 'en') }}" 
-                   class="inline-block rounded-md px-3 py-1.5 {{ app()->getLocale() === 'en' ? 'bg-white text-slate-900' : 'text-slate-200 hover:bg-white/10' }}">
-                    EN
-                </a>
-            </div>
-        </header>
+        <h1 class="text-3xl font-bold">{{ __('messages.console_title') }}</h1>
 
         <p class="text-slate-300">{{ __('messages.console_subtitle') }}</p>
 

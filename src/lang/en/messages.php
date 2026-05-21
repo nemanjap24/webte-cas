@@ -40,4 +40,27 @@ return [
     'outputHistory' => 'Output history (logs)',
     'vars' => 'Saved session variables',
     'back' => 'Back to home',
+
+    // Navigation
+    'nav' => [
+        'home' => 'Home',
+        'console' => 'Console',
+        'animations' => 'Animations',
+        'logs' => 'Logs',
+        'stats' => 'Statistics',
+        'api_docs' => 'API Docs',
+    ],
+
+    // Animations page
+    'animations_title' => 'System Simulations',
+    'animations_subtitle' => 'Interactive animations of dynamic systems with synchronized live charts.',
+
+    // Logs page
+    'logs_title' => 'Request History',
+    'logs_subtitle' => 'All CAS interactions are logged here and available for CSV export.',
+    'export_csv' => 'Export to CSV',
+
+    // Stats page
+    'stats_title' => 'Usage Statistics',
+    'stats_subtitle' => 'Overview of simulation usage across all users.',
 ];
