@@ -1,1 +1,1 @@
-//
+import './cas-console';
