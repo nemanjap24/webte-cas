@@ -15,6 +15,7 @@ Route::middleware('api.key')->group(function () {
     Route::get('/logs/export', [LogController::class, 'export']);
 
     Route::get('/docs/openapi', [DocsController::class, 'openapi']);
+    Route::get('/docs/pdf', [DocsController::class, 'pdf']);
 });
 
 Route::middleware(['api.key', 'anonymous.token'])->group(function () {
