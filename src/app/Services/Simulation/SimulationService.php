@@ -9,6 +9,7 @@ class SimulationService
     public function runInvertedPendulum(float $targetPosition = 0.2): array
     {
         $script = <<<OCTAVE
+pkg load control;
 M = 0.5;
 m = 0.2;
 b = 0.1;
@@ -36,6 +37,7 @@ OCTAVE;
     public function runBallBeam(float $targetPosition = 0.25): array
     {
         $script = <<<OCTAVE
+pkg load control;
 m = 0.111;
 R = 0.015;
 g = -9.8;
