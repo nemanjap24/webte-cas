@@ -6,19 +6,28 @@ use Symfony\Component\Process\Process;
 
 class OctaveService
 {
-    public function execute(string $command, ?string $existingContext = null): array
+    public function execute(string $command, string $sessionToken): array
     {
-        $script = $this->buildScript($command, $existingContext);
+        $sessionPath = storage_path("app/cas_sessions/{$sessionToken}.mat");
+        $tempScriptPath = storage_path("app/cas_sessions/{$sessionToken}_exec.m");
+
+        $script = $this->buildFullScript($command, $sessionPath);
+        file_put_contents($tempScriptPath, $script);
 
         $process = new Process([
             config('cas.executable_path'),
             '--quiet',
-            '--eval',
-            $script,
+            '--no-gui',
+            $tempScriptPath,
         ]);
 
         $process->setTimeout(15);
         $process->run();
+
+        // Cleanup temp script
+        if (file_exists($tempScriptPath)) {
+            unlink($tempScriptPath);
+        }
 
         usleep(config('cas.slowdown_ms') * 1000);
 
@@ -27,7 +36,6 @@ class OctaveService
                 'success' => false,
                 'output' => null,
                 'error' => trim($process->getErrorOutput() ?: $process->getOutput()),
-                'context' => $existingContext,
             ];
         }
 
@@ -35,25 +43,21 @@ class OctaveService
             'success' => true,
             'output' => trim($process->getOutput()),
             'error' => null,
-            'context' => $this->appendContext($existingContext, $command),
         ];
     }
 
-    private function buildScript(string $command, ?string $existingContext = null): string
+    private function buildFullScript(string $command, string $sessionPath): string
     {
-        $parts = [];
-
-        if (! empty($existingContext)) {
-            $parts[] = $existingContext;
+        $script = [];
+        $script[] = "warning('off', 'all');"; // Suppress warnings for cleaner output
+        
+        if (file_exists($sessionPath)) {
+            $script[] = "load('{$sessionPath}');";
         }
 
-        $parts[] = $command;
+        $script[] = $command;
+        $script[] = "save('-binary', '{$sessionPath}');";
 
-        return implode('; ', $parts);
-    }
-
-    private function appendContext(?string $existingContext, string $command): string
-    {
-        return trim(($existingContext ? $existingContext . '; ' : '') . $command);
+        return implode("\n", $script);
     }
 }

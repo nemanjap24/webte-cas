@@ -3,25 +3,12 @@
 @section('title', __('messages.title'))
 
 @section('content')
-<main class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+<main class="text-slate-100">
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12 lg:px-10">
-        <header class="flex flex-wrap items-center justify-between gap-4">
-            <span class="rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-1 text-xs font-semibold tracking-wide text-cyan-200">
+        <section class="space-y-5">
+            <span class="inline-block rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-1 text-xs font-semibold tracking-wide text-cyan-200">
                 {{ __('messages.badge') }}
             </span>
-            <div class="inline-flex rounded-xl border border-white/10 bg-white/5 p-1 text-sm">
-                <a href="{{ route('lang.switch', 'sk') }}" 
-                   class="rounded-lg px-3 py-1.5 transition {{ app()->getLocale() === 'sk' ? 'bg-white text-slate-900' : 'text-slate-200 hover:bg-white/10' }}">
-                    Slovensky
-                </a>
-                <a href="{{ route('lang.switch', 'en') }}" 
-                   class="rounded-lg px-3 py-1.5 transition {{ app()->getLocale() === 'en' ? 'bg-white text-slate-900' : 'text-slate-200 hover:bg-white/10' }}">
-                    English
-                </a>
-            </div>
-        </header>
-
-        <section class="space-y-5">
             <h1 class="max-w-4xl text-4xl font-bold leading-tight md:text-5xl">{{ __('messages.title') }}</h1>
             <p class="max-w-3xl text-lg text-slate-300">{{ __('messages.subtitle') }}</p>
             <div class="flex flex-wrap gap-3">

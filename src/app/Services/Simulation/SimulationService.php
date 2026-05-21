@@ -82,6 +82,12 @@ OCTAVE;
         }
 
         $output = trim($process->getOutput());
+        
+        // Extract JSON using regex in case Octave printed warnings
+        if (preg_match('/\{.*\}/s', $output, $matches)) {
+            $output = $matches[0];
+        }
+
         $decoded = json_decode($output, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {

@@ -18,21 +18,10 @@ class CasController extends Controller
             'session_token' => ['required', 'string', 'max:255'],
         ]);
 
-        $session = CasSession::firstOrCreate(
-            ['session_token' => $validated['session_token']],
-            ['context' => null]
-        );
-
         $result = $octaveService->execute(
             $validated['command'],
-            $session->context
+            $validated['session_token']
         );
-
-        if ($result['success']) {
-            $session->update([
-                'context' => $result['context'],
-            ]);
-        }
 
         CasLog::create([
             'session_token' => $validated['session_token'],
