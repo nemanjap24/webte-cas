@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\SimulationController;
 use App\Http\Controllers\Api\StatisticsController;
 use App\Http\Controllers\Api\DocsController;
 
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('api.key')->group(function () {
@@ -18,7 +19,7 @@ Route::middleware('api.key')->group(function () {
     Route::get('/docs/pdf', [DocsController::class, 'pdf']);
 });
 
-Route::middleware(['api.key', 'anonymous.token'])->group(function () {
+Route::middleware(['api.key', EncryptCookies::class, 'anonymous.token'])->group(function () {
     Route::post('/simulations/inverted-pendulum', [SimulationController::class, 'invertedPendulum']);
     Route::post('/simulations/ball-beam', [SimulationController::class, 'ballBeam']);
 
