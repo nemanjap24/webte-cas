@@ -43,6 +43,21 @@ services:
     networks:
       - webte
 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: webte_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - webte
+
 networks:
   webte:
 
