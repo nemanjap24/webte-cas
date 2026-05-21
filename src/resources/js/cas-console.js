@@ -93,19 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.message || data.error || 'Server error');
             }
 
-            // Append to output
             const row = document.createElement('div');
             row.className = "rounded border border-white/10 p-2 bg-white/5";
             row.innerHTML = `
                 <p class="text-slate-400 whitespace-pre-wrap">&gt; ${escapeHtml(script)}</p>
                 <p class="text-emerald-200 whitespace-pre-wrap">${escapeHtml(data.output)}</p>
             `;
-            
-            // Clear current output if it's the first one, then prepend
-            if (lastBatchDiv.querySelector('p.italic')) {
-                lastBatchDiv.innerHTML = '';
-            }
-            lastBatchDiv.prepend(row);
+
+            lastBatchDiv.replaceChildren(row);
             
         } catch (err) {
             errorDiv.innerText = err.message;

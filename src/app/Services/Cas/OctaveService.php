@@ -44,12 +44,19 @@ class OctaveService
         $parts = [];
 
         if (! empty($existingContext)) {
-            $parts[] = $existingContext;
+            $parts[] = 'evalc(' . $this->octaveCharLiteral($existingContext) . ')';
         }
 
         $parts[] = $command;
 
-        return implode('; ', $parts);
+        return implode(";\n", $parts);
+    }
+
+    private function octaveCharLiteral(string $value): string
+    {
+        $bytes = array_map('ord', str_split($value));
+
+        return 'char([' . implode(' ', $bytes) . '])';
     }
 
     private function appendContext(?string $existingContext, string $command): string

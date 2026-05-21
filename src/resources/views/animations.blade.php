@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const apiKey = container.dataset.apiKey;
         const system = systemSelector.value;
         const target = targetSlider.value;
-        const sessionToken = document.cookie.match(/cas_session_token=([^;]+)/)?.[1];
 
         isRunning = true;
         startBtn.disabled = true;
@@ -165,8 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'X-API-KEY': apiKey
                 },
                 body: JSON.stringify({ 
-                    target_position: target,
-                    session_token: sessionToken
+                    target_position: target
                 })
             });
 
