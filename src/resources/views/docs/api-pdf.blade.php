@@ -264,9 +264,23 @@
                             <tbody>
                                 @foreach($operation['responses'] as $status => $response)
                                     @php
-                                        $responseContent = $response['content']['application/json']['schema']['$ref']
-                                            ?? $response['content']['text/csv']['schema']['format']
-                                            ?? '';
+                                        $schema = $response['content']['application/json']['schema']
+                                            ?? $response['content']['text/csv']['schema']
+                                            ?? $response['content']['application/pdf']['schema']
+                                            ?? null;
+                                        $responseContent = '';
+
+                                        if (!empty($schema['$ref'])) {
+                                            $responseContent = $schema['$ref'];
+                                        } elseif (!empty($schema['oneOf'])) {
+                                            $responseContent = collect($schema['oneOf'])
+                                                ->map(fn ($item) => $item['$ref'] ?? ($item['type'] ?? 'schema'))
+                                                ->implode(', ');
+                                        } elseif (!empty($schema['format'])) {
+                                            $responseContent = $schema['format'];
+                                        } elseif (!empty($schema['type'])) {
+                                            $responseContent = $schema['type'];
+                                        }
                                     @endphp
                                     <tr>
                                         <td>{{ $status }}</td>
