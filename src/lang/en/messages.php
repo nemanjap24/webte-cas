@@ -35,6 +35,13 @@ return [
     'lastBatch' => 'Latest Execution',
     'noBatch' => 'No batch executed yet. Enter commands and press Run.',
     'back' => 'Back to home',
+    'console_errors' => [
+        'server' => 'The server could not process the command.',
+        'validation' => 'Enter a valid Octave command before running it.',
+        'undefined_variable' => 'Variable ":name" is not defined in this session.',
+        'parse' => 'The command contains a syntax error. Check the expression and try again.',
+        'generic' => 'The command could not be executed.',
+    ],
 
     // Navigation
     'nav' => [
