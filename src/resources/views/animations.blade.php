@@ -14,7 +14,7 @@
             <!-- Controls Sidebar -->
             <aside class="flex flex-col gap-6 rounded-2xl border border-white/10 bg-white/5 p-6 h-fit">
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">Select System</label>
+                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('messages.select_system') }}</label>
                     <select id="system-selector" class="w-full rounded-xl border border-white/15 bg-slate-900 p-3 outline-none focus:ring-2 focus:ring-cyan-400 transition">
                         <option value="pendulum">Inverted Pendulum</option>
                         <option value="ball">Ball & Beam</option>
@@ -22,7 +22,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">Target Position</label>
+                    <label class="block text-sm font-medium text-slate-400 mb-2">{{ __('messages.target_position') }}</label>
                     <input type="range" id="target-slider" min="-0.5" max="0.5" step="0.01" value="0.2" class="w-full accent-cyan-400">
                     <div class="mt-1 flex justify-between text-[10px] text-slate-500 font-mono">
                         <span>-0.5m</span>
@@ -32,15 +32,15 @@
                 </div>
 
                 <button id="start-btn" class="w-full rounded-xl bg-cyan-400 py-3 font-bold text-slate-950 hover:bg-cyan-300 transition disabled:opacity-50">
-                    Run Simulation
+                    {{ __('messages.run_simulation') }}
                 </button>
 
                 <button id="reset-btn" class="w-full rounded-xl border border-white/10 bg-white/5 py-3 font-bold text-white hover:bg-white/10 transition disabled:opacity-50">
-                    Reset State
+                    {{ __('messages.reset_state') }}
                 </button>
 
                 <div id="status-indicator" class="hidden rounded-lg border border-cyan-400/20 bg-cyan-400/10 px-3 py-2 text-xs text-cyan-200 animate-pulse">
-                    Computing results on server...
+                    {{ __('messages.computing') }}
                 </div>
             </aside>
 

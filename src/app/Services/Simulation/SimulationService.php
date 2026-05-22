@@ -77,7 +77,12 @@ OCTAVE;
         $process->setTimeout(30);
         $process->run();
 
-        usleep(config('cas.slowdown_ms') * 1000);
+        // Server-side slowdown as per Requirement #4
+        $coefficient = config('cas.slowdown_coefficient', 1.0);
+        if ($coefficient > 0) {
+            // Simulations are heavier, we use a larger base delay (200ms)
+            usleep((int) (200000 * $coefficient));
+        }
 
         if (! $process->isSuccessful()) {
             return [

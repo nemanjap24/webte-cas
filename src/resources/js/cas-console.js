@@ -3,9 +3,51 @@ import { keymap } from "@codemirror/view"
 import { indentWithTab } from "@codemirror/commands"
 import { oneDark } from "@codemirror/theme-one-dark"
 import { StreamLanguage } from "@codemirror/language"
-// Octave doesn't have a direct CM6 package yet, we use a simple fallback or legacy
-// For now, let's use a generic approach as per CM6 docs for custom/legacy modes
-// but we'll stick to basic setup for stability.
+
+// Simple Octave/MATLAB grammar for CodeMirror 6
+const octaveLanguage = StreamLanguage.define({
+    token(stream) {
+        if (stream.eatSpace()) return null;
+
+        // Comments
+        if (stream.match(/[#%]/)) {
+            stream.skipToEnd();
+            return "comment";
+        }
+
+        // Strings
+        if (stream.match(/['"]/)) {
+            while (!stream.eol()) {
+                if (stream.next() === stream.current()) break;
+            }
+            return "string";
+        }
+
+        // Numbers
+        if (stream.match(/\d+(\.\d+)?(e[+-]?\d+)?/i)) {
+            return "number";
+        }
+
+        // Keywords
+        const keywords = /^(?:function|end|if|else|elseif|for|while|return|break|continue|switch|case|otherwise|try|catch|global|persistent|pkg|disp|plot|lsim|ss|lqr|inv|ones|size|jsonencode|struct)\b/;
+        if (stream.match(keywords)) {
+            return "keyword";
+        }
+
+        // Identifiers/Variables
+        if (stream.match(/[a-zA-Z_][a-zA-Z0-9_]*/)) {
+            return "variableName";
+        }
+
+        // Operators
+        if (stream.match(/[+\-*\/\\^=<>!&|]/)) {
+            return "operator";
+        }
+
+        stream.next();
+        return null;
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const casForm = document.getElementById('cas-form');
@@ -33,11 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initialize CodeMirror 6
+    // Initialize CodeMirror 6 with Octave support
     const editor = new EditorView({
         doc: samples.ball,
         extensions: [
             basicSetup,
+            octaveLanguage,
             keymap.of([indentWithTab]),
             oneDark,
             EditorView.lineWrapping

@@ -36,7 +36,7 @@
                         <button type="submit" 
                                 id="run-btn" 
                                 data-label-run="{{ __('messages.run') }}" 
-                                data-label-running="Running..."
+                                data-label-running="{{ __('messages.running') }}"
                                 class="rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-950 hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60">
                             {{ __('messages.run') }}
                         </button>
@@ -57,7 +57,7 @@
                 </div>
 
                 <div id="last-batch-output" class="h-80 w-full space-y-2 overflow-y-auto rounded-xl bg-slate-900 p-3 font-mono text-sm border border-white/15">
-                    <p class="text-slate-400 italic">No batch executed yet. Enter commands and press Run.</p>
+                    <p class="text-slate-400 italic">{{ __('messages.noBatch') }}</p>
                 </div>
 
                 <!-- Spacer to align with the buttons on the left -->

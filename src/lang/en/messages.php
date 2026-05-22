@@ -1,44 +1,39 @@
 <?php
 
 return [
-    'badge' => 'Semester project • CAS + REST API',
-    'title' => 'Control of dynamic systems in a web app',
-    'subtitle' => 'A single app for running calculations, plotting charts, and animating two systems: inverted pendulum and ball-and-beam.',
-    'ctaPrimary' => 'Open calculation module',
-    'ctaSecondary' => 'Reference model (CTMS)',
-    'sectionsTitle' => 'Key assignment blocks',
+    'badge' => 'Final Project 2026',
+    'title' => 'Web-based CAS Integration',
+    'subtitle' => 'A high-performance REST API platform for Computer Aided Systems. Execute Octave commands, visualize dynamic simulations, and monitor usage statistics in real-time.',
+    'ctaPrimary' => 'Launch Console',
+    'ctaSecondary' => 'API Documentation',
+    'sectionsTitle' => 'Core Capabilities',
     'cards' => [
-        [
-            'title' => 'CAS API layer',
-            'text' => 'The backend will connect Octave (or another CAS) through a REST API. Simulation outputs are computed server-side.',
+        'simulations' => [
+            'title' => 'Dynamic Simulations',
+            'text' => 'Interactive visualizations of Inverted Pendulum and Ball & Beam systems with synchronized real-time graphing.',
         ],
-        [
-            'title' => '2 simulations',
-            'text' => 'Implement two models: inverted pendulum and ball-and-beam. Plot and animation should stay synchronized over time.',
+        'api' => [
+            'title' => 'Secure CAS API',
+            'text' => 'Robust REST endpoints protected by API keys, capable of executing complex Octave scripts with session persistence.',
         ],
-        [
-            'title' => 'Security + logging',
-            'text' => 'CAS calls must be protected with token/API key auth. Every request is logged and exportable to CSV.',
-        ],
-        [
-            'title' => 'Docs + Docker',
-            'text' => 'OpenAPI documentation (plus PDF export) and full app containerization using Docker.',
+        'docs' => [
+            'title' => 'Automated Docs',
+            'text' => 'Dynamically generated PDF documentation and interactive Swagger UI to explore our system capabilities.',
         ],
     ],
-    'footer' => 'First screen is ready. Next we can build the calculation form or the first animation.',
+    'download_pdf' => 'Download PDF',
+    'footer_text' => 'WEBTE CAS Team',
 
-    // Console page translations
-    'console_title' => 'Calculation module (backend-connected)',
-    'console_subtitle' => 'Requests now go through a backend mutation. Outputs are server-logged and variables remain persisted per session token.',
-    'sessionToken' => 'Session token',
-    'apiKey' => 'API key',
+    // Console page
+    'console_title' => 'Calculation Console',
+    'console_subtitle' => 'Execute raw Octave commands. Variables are persisted across your session.',
     'run' => 'Run commands',
+    'running' => 'Running...',
     'clearScript' => 'Clear script',
-    'loadBall' => 'Sample: ball-and-beam',
-    'loadPendulum' => 'Sample: inverted pendulum',
-    'lastBatch' => 'Latest batch output',
-    'outputHistory' => 'Output history (logs)',
-    'vars' => 'Saved session variables',
+    'loadBall' => 'Ball & Beam sample',
+    'loadPendulum' => 'Pendulum sample',
+    'lastBatch' => 'Latest Execution',
+    'noBatch' => 'No batch executed yet. Enter commands and press Run.',
     'back' => 'Back to home',
 
     // Navigation
@@ -48,19 +43,33 @@ return [
         'animations' => 'Animations',
         'logs' => 'Logs',
         'stats' => 'Statistics',
-        'api_docs' => 'API Docs',
     ],
 
     // Animations page
     'animations_title' => 'System Simulations',
     'animations_subtitle' => 'Interactive animations of dynamic systems with synchronized live charts.',
+    'select_system' => 'Select System',
+    'target_position' => 'Target Position',
+    'run_simulation' => 'Run Simulation',
+    'reset_state' => 'Reset State',
+    'computing' => 'Computing results on server...',
 
     // Logs page
     'logs_title' => 'Request History',
     'logs_subtitle' => 'All CAS interactions are logged here and available for CSV export.',
     'export_csv' => 'Export to CSV',
+    'status_success' => 'Success',
+    'status_error' => 'Error',
+    'no_logs' => 'No interactions recorded yet. Go to the Console or Animations to generate logs.',
 
     // Stats page
     'stats_title' => 'Usage Statistics',
     'stats_subtitle' => 'Overview of simulation usage across all users.',
+    'unique_sessions' => 'Validated unique sessions',
+    'recent_activity' => 'Recent Activity Details',
+    'time' => 'Time',
+    'animation' => 'Animation',
+    'location' => 'Location',
+    'no_stats' => 'No activity recorded yet.',
+    'location_unavailable' => 'Location data unavailable',
 ];

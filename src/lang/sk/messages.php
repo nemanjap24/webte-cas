@@ -1,45 +1,40 @@
 <?php
 
 return [
-    'badge' => 'Semestrálny projekt • CAS + REST API',
-    'title' => 'Riadenie dynamických systémov vo webovej aplikácii',
-    'subtitle' => 'Jedna stránka pre spúšťanie výpočtov, vizualizáciu grafov a animácie systémov: inverzné kyvadlo a gulička na tyči.',
-    'ctaPrimary' => 'Otvoriť výpočtový modul',
-    'ctaSecondary' => 'Referenčný model (CTMS)',
-    'sectionsTitle' => 'Kľúčové časti zadania',
+    'badge' => 'Záverečný projekt 2026',
+    'title' => 'Webová integrácia CAS',
+    'subtitle' => 'Vysokovýkonná platforma REST API pre systémy Computer Aided Systems. Spúšťajte príkazy Octave, vizualizujte dynamické simulácie a monitorujte štatistiky používania v reálnom čase.',
+    'ctaPrimary' => 'Spustiť konzolu',
+    'ctaSecondary' => 'API dokumentácia',
+    'sectionsTitle' => 'Základné možnosti',
     'cards' => [
-        [
-            'title' => 'CAS API vrstva',
-            'text' => 'Backend bude pripájať Octave (alebo iný CAS) cez REST API. Výpočty pre animáciu a graf budú bežať na serveri.',
+        'simulations' => [
+            'title' => 'Dynamické simulácie',
+            'text' => 'Interaktívne vizualizácie systémov inverzného kyvadla a guličky na tyči so synchronizovaným grafom v reálnom čase.',
         ],
-        [
-            'title' => '2 simulácie',
-            'text' => 'Implementujú sa modely: inverzné kyvadlo a gulička na tyči. Graf a animácia musia byť časovo synchronizované.',
+        'api' => [
+            'title' => 'Zabezpečené CAS API',
+            'text' => 'Robustné REST endpointy chránené API kľúčmi, schopné vykonávať zložité Octave skripty s perzistenciou relácie.',
         ],
-        [
-            'title' => 'Bezpečnosť + logovanie',
-            'text' => 'Volania CAS budú chránené tokenom/API kľúčom. Každý request sa bude logovať a bude exportovateľný do CSV.',
-        ],
-        [
-            'title' => 'Dokumentácia + Docker',
-            'text' => 'OpenAPI dokumentácia (aj PDF export) a kontajnerizácia celej aplikácie pomocou Dockeru.',
+        'docs' => [
+            'title' => 'Automatizovaná dokumentácia',
+            'text' => 'Dynamicky generovaná PDF dokumentácia a interaktívne Swagger UI na preskúmanie možností nášho systému.',
         ],
     ],
-    'footer' => 'Prvá obrazovka je pripravená. Ďalej môžeme spraviť formulár výpočtov alebo prvú animáciu.',
+    'download_pdf' => 'Stiahnuť PDF',
+    'footer_text' => 'WEBTE CAS Tím',
 
-    // Console page translations
-    'console_title' => 'Výpočtový modul (napojený na backend)',
-    'console_subtitle' => 'Požiadavky už idú cez backend mutation. Výstupy sa logujú na serveri a premenné zostávajú uložené pre daný session token.',
-    'sessionToken' => 'Session token',
-    'apiKey' => 'API kľúč',
+    // Stránka konzoly
+    'console_title' => 'Výpočtová konzola',
+    'console_subtitle' => 'Vykonávajte čisté príkazy Octave. Premenné sú zachované počas celej vašej relácie.',
     'run' => 'Spustiť príkazy',
+    'running' => 'Spúšťam...',
     'clearScript' => 'Vymazať skript',
-    'loadBall' => 'Ukážka: gulička na tyči',
-    'loadPendulum' => 'Ukážka: inverzné kyvadlo',
-    'lastBatch' => 'Posledný batch výstupov',
-    'outputHistory' => 'História výstupov (logy)',
-    'vars' => 'Uložené premenné relácie',
-    'back' => 'Späť na úvod',
+    'loadBall' => 'Ukážka: Gulička na tyči',
+    'loadPendulum' => 'Ukážka: Kyvadlo',
+    'lastBatch' => 'Posledné vykonanie',
+    'noBatch' => 'Zatiaľ nebol vykonaný žiadny príkaz. Zadajte príkazy a stlačte Spustiť.',
+    'back' => 'Späť na domov',
 
     // Navigácia
     'nav' => [
@@ -48,19 +43,33 @@ return [
         'animations' => 'Animácie',
         'logs' => 'Logy',
         'stats' => 'Štatistiky',
-        'api_docs' => 'API Dokumentácia',
     ],
 
     // Stránka animácií
     'animations_title' => 'Simulácie systémov',
     'animations_subtitle' => 'Interaktívne animácie dynamických systémov so synchronizovanými grafmi.',
+    'select_system' => 'Vyberte systém',
+    'target_position' => 'Cieľová poloha',
+    'run_simulation' => 'Spustiť simuláciu',
+    'reset_state' => 'Resetovať stav',
+    'computing' => 'Počítam výsledky na serveri...',
 
     // Stránka logov
     'logs_title' => 'História požiadaviek',
-    'logs_subtitle' => 'Všetky interakcie s CAS sú tu zaznamenané a dostupné pre export do CSV.',
+    'logs_subtitle' => 'Všetky interakcie s CAS sú tu zaznamenané a dostupné na export do CSV.',
     'export_csv' => 'Exportovať do CSV',
+    'status_success' => 'Úspech',
+    'status_error' => 'Chyba',
+    'no_logs' => 'Zatiaľ nie sú zaznamenané žiadne interakcie. Ak chcete generovať logy, choďte do Konzoly alebo Animácií.',
 
     // Stránka štatistík
     'stats_title' => 'Štatistiky používania',
     'stats_subtitle' => 'Prehľad používania simulácií všetkými používateľmi.',
+    'unique_sessions' => 'Validované unikátne relácie',
+    'recent_activity' => 'Podrobnosti o nedávnej aktivite',
+    'time' => 'Čas',
+    'animation' => 'Animácia',
+    'location' => 'Lokalita',
+    'no_stats' => 'Zatiaľ nebola zaznamenaná žiadna aktivita.',
+    'location_unavailable' => 'Údaje o polohe nie sú k dispozícii',
 ];
