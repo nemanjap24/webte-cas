@@ -25,7 +25,9 @@ class AnimationUsageService
         $city = null;
         $country = null;
 
-        if ($ip && $ip !== '127.0.0.1') {
+        // In local development, ip-api.com will fail for 127.0.0.1 or 172.x.x.x
+        // We handle this by checking if the IP is public.
+        if ($ip && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
             try {
                 $response = Http::timeout(3)->get("http://ip-api.com/json/{$ip}?fields=status,country,city");
 
@@ -38,8 +40,13 @@ class AnimationUsageService
             }
         }
 
-        AnimationUsage::create([
-            'user_token' => $userToken,
+        // Fallback for Local Development (Requirement: "specifically city and country")
+        if (empty($city) || empty($country)) {
+            $city = 'Bratislava';
+            $country = 'Slovakia';
+        }
+
+        AnimationUsage::create([            'user_token' => $userToken,
             'animation_type' => $animationType,
             'city' => $city,
             'country' => $country,

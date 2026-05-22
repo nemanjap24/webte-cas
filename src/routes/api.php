@@ -14,10 +14,10 @@ Route::middleware('api.key')->group(function () {
 
     Route::get('/logs', [LogController::class, 'index']);
     Route::get('/logs/export', [LogController::class, 'export']);
-
-    Route::get('/docs/openapi', [DocsController::class, 'openapi']);
-    Route::get('/docs/pdf', [DocsController::class, 'pdf']);
 });
+
+Route::get('/docs/openapi', [DocsController::class, 'openapi']);
+Route::get('/docs/pdf', [DocsController::class, 'pdf']);
 
 Route::middleware(['api.key', EncryptCookies::class, 'anonymous.token'])->group(function () {
     Route::post('/simulations/inverted-pendulum', [SimulationController::class, 'invertedPendulum']);

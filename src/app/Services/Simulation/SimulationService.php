@@ -6,8 +6,10 @@ use Symfony\Component\Process\Process;
 
 class SimulationService
 {
-    public function runInvertedPendulum(float $targetPosition = 0.2): array
+    public function runInvertedPendulum(float $targetPosition = 0.2, ?array $initialState = null): array
     {
+        $init = $initialState ? '[' . implode('; ', $initialState) . ']' : '[0; 0; 0; 0]';
+        
         $script = <<<OCTAVE
 pkg load control;
 M = 0.5;
@@ -27,15 +29,18 @@ N = -inv(C(1,:)*inv(A-B*K)*B);
 sys = ss(Ac,B*N,C,D);
 t = 0:0.05:10;
 r = {$targetPosition};
-[y,t,x] = lsim(sys,r*ones(size(t)),t,[0;0;0;0]);
-disp(jsonencode(struct("time", t, "cart_position", y(:,1), "pendulum_angle", y(:,2))));
+[y,t,x] = lsim(sys,r*ones(size(t)),t,{$init});
+final_state = x(size(x,1),:);
+disp(jsonencode(struct("time", t, "cart_position", y(:,1), "pendulum_angle", y(:,2), "final_state", final_state)));
 OCTAVE;
 
         return $this->runOctaveJson($script);
     }
 
-    public function runBallBeam(float $targetPosition = 0.25): array
+    public function runBallBeam(float $targetPosition = 0.25, ?array $initialState = null): array
     {
+        $init = $initialState ? '[' . implode('; ', $initialState) . ']' : '[0; 0; 0; 0]';
+
         $script = <<<OCTAVE
 pkg load control;
 m = 0.111;
@@ -52,8 +57,9 @@ N = -inv(C*inv(A-B*K)*B);
 sys = ss(A-B*K,B*N,C,D);
 t = 0:0.01:5;
 r = {$targetPosition};
-[y,t,x] = lsim(sys,r*ones(size(t)),t,[0;0;0;0]);
-disp(jsonencode(struct("time", t, "ball_position", y, "beam_angle", x(:,3))));
+[y,t,x] = lsim(sys,r*ones(size(t)),t,{$init});
+final_state = x(size(x,1),:);
+disp(jsonencode(struct("time", t, "ball_position", y, "beam_angle", x(:,3), "final_state", final_state)));
 OCTAVE;
 
         return $this->runOctaveJson($script);

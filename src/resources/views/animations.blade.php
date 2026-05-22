@@ -35,6 +35,10 @@
                     Run Simulation
                 </button>
 
+                <button id="reset-btn" class="w-full rounded-xl border border-white/10 bg-white/5 py-3 font-bold text-white hover:bg-white/10 transition disabled:opacity-50">
+                    Reset State
+                </button>
+
                 <div id="status-indicator" class="hidden rounded-lg border border-cyan-400/20 bg-cyan-400/10 px-3 py-2 text-xs text-cyan-200 animate-pulse">
                     Computing results on server...
                 </div>
@@ -79,8 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetSlider = document.getElementById('target-slider');
     const targetValue = document.getElementById('target-value');
     const startBtn = document.getElementById('start-btn');
+    const resetBtn = document.getElementById('reset-btn');
     const status = document.getElementById('status-indicator');
     const container = document.getElementById('simulation-container');
+
+    let isRunning = false;
+    let animationId = null;
 
     // Chart.js Setup
     const chartCtx = document.getElementById('sim-chart').getContext('2d');
@@ -128,8 +136,36 @@ document.addEventListener('DOMContentLoaded', () => {
         targetValue.textContent = parseFloat(e.target.value).toFixed(2) + 'm';
     });
 
-    let isRunning = false;
-    let animationId = null;
+    resetBtn.addEventListener('click', async () => {
+        if (isRunning) return;
+        const system = systemSelector.value;
+        const apiKey = container.dataset.apiKey;
+
+        resetBtn.disabled = true;
+        try {
+            const endpoint = system === 'pendulum' ? '/api/simulations/inverted-pendulum' : '/api/simulations/ball-beam';
+            await fetch(endpoint, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': apiKey
+                },
+                body: JSON.stringify({ 
+                    reset: true,
+                    target_position: system === 'pendulum' ? 0 : 0
+                })
+            });
+            
+            draw(system, 0, 0);
+            chart.data.labels = [];
+            chart.data.datasets.forEach(d => d.data = []);
+            chart.update();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            resetBtn.disabled = false;
+        }
+    });
 
     systemSelector.addEventListener('change', () => {
         const type = systemSelector.value;

@@ -15,8 +15,8 @@
                 <a href="/console" class="rounded-xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300">
                     {{ __('messages.ctaPrimary') }}
                 </a>
-                <a href="https://ctms.engin.umich.edu/CTMS/index.php?example=BallBeam&section=ControlStateSpace" target="_blank" rel="noreferrer" class="rounded-xl border border-white/20 px-5 py-3 font-semibold text-slate-100 transition hover:bg-white/10">
-                    {{ __('messages.ctaSecondary') }}
+                <a href="/api/docs/pdf" class="rounded-xl border border-white/20 px-5 py-3 font-semibold text-slate-100 transition hover:bg-white/10">
+                    PDF Guide
                 </a>
             </div>
         </section>
@@ -30,6 +30,12 @@
                         <p class="text-sm leading-6 text-slate-300">{{ $card['text'] }}</p>
                     </article>
                 @endforeach
+
+                <article class="rounded-2xl border border-cyan-400/20 bg-cyan-400/5 p-5 shadow-lg shadow-cyan-900/10">
+                    <h3 class="mb-2 text-lg font-semibold text-cyan-300">API Documentation</h3>
+                    <p class="text-sm leading-6 text-slate-300">Explore our interactive OpenAPI specification to integrate with our CAS backend services.</p>
+                    <a href="/docs" class="mt-3 inline-block text-xs font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300">Open Swagger UI &rarr;</a>
+                </article>
             </div>
         </section>
 
