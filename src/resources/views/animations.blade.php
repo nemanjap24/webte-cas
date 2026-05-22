@@ -60,7 +60,7 @@
                         <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Real-time Metrics</h3>
                         <div id="chart-legend" class="flex gap-4 text-[10px] font-mono">
                             <span class="flex items-center gap-1.5 text-cyan-400"><span class="h-2 w-2 rounded-full bg-cyan-400"></span> POSITION</span>
-                            <span class="flex items-center gap-1.5 text-emerald-400"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> ANGLE</span>
+                            <span class="flex items-center gap-1.5 text-orange-400"><span class="h-2 w-2 rounded-full bg-orange-400"></span> ANGLE</span>
                         </div>
                     </div>
                     <div class="h-64">
@@ -90,16 +90,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let isRunning = false;
     let animationId = null;
 
+    const systemChartConfig = {
+        pendulum: {
+            positionLabel: 'Cart position (m)',
+            angleLabel: 'Pendulum angle (rad)',
+        },
+        ball: {
+            positionLabel: 'Ball position (m)',
+            angleLabel: 'Beam angle (rad)',
+        },
+    };
+
+    function activeChartConfig() {
+        return systemChartConfig[systemSelector.value] || systemChartConfig.pendulum;
+    }
+
     // Chart.js Setup
     const chartCtx = document.getElementById('sim-chart').getContext('2d');
     const chart = new Chart(chartCtx, {
         type: 'line',
         data: {
-            labels: [],
             datasets: [
                 {
-                    label: 'Position',
+                    label: activeChartConfig().positionLabel,
                     data: [],
+                    yAxisID: 'position',
                     borderColor: '#22d3ee',
                     backgroundColor: 'rgba(34, 211, 238, 0.1)',
                     borderWidth: 2,
@@ -108,9 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     fill: true
                 },
                 {
-                    label: 'Angle',
+                    label: activeChartConfig().angleLabel,
                     data: [],
-                    borderColor: '#34d399',
+                    yAxisID: 'angle',
+                    borderColor: '#f97316',
                     borderWidth: 1,
                     pointRadius: 0,
                     tension: 0.1
@@ -121,16 +137,57 @@ document.addEventListener('DOMContentLoaded', () => {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            parsing: false,
             scales: {
-                x: { display: false },
-                y: {
+                x: {
+                    type: 'linear',
+                    title: {
+                        display: true,
+                        text: 'Time (s)',
+                        color: '#94a3b8',
+                        font: { size: 11, weight: 'bold' }
+                    },
                     grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#64748b', font: { size: 10 } }
+                },
+                position: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: activeChartConfig().positionLabel,
+                        color: '#22d3ee',
+                        font: { size: 11, weight: 'bold' }
+                    },
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#64748b', font: { size: 10 } }
+                },
+                angle: {
+                    type: 'linear',
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: activeChartConfig().angleLabel,
+                        color: '#f97316',
+                        font: { size: 11, weight: 'bold' }
+                    },
+                    grid: { drawOnChartArea: false },
                     ticks: { color: '#64748b', font: { size: 10 } }
                 }
             },
             plugins: { legend: { display: false } }
         }
     });
+
+    function resetChart() {
+        const config = activeChartConfig();
+        chart.data.datasets[0].label = config.positionLabel;
+        chart.data.datasets[1].label = config.angleLabel;
+        chart.options.scales.position.title.text = config.positionLabel;
+        chart.options.scales.angle.title.text = config.angleLabel;
+        chart.data.datasets.forEach(d => d.data = []);
+        chart.update();
+    }
 
     targetSlider.addEventListener('input', (e) => {
         targetValue.textContent = parseFloat(e.target.value).toFixed(2) + 'm';
@@ -157,9 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             draw(system, 0, 0);
-            chart.data.labels = [];
-            chart.data.datasets.forEach(d => d.data = []);
-            chart.update();
+            resetChart();
         } catch (err) {
             console.error(err);
         } finally {
@@ -174,10 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.disabled = false;
         
         draw(type, 0, 0);
-        
-        chart.data.labels = [];
-        chart.data.datasets.forEach(d => d.data = []);
-        chart.update();
+        resetChart();
     });
 
     async function runSimulation() {
@@ -232,39 +284,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const angles = data[angKey];
 
         let frame = 0;
+        let startTimestamp = null;
         const totalFrames = time.length;
+        const firstTime = Number(time[0]) || 0;
+        const lastTime = Number(time[totalFrames - 1]) || 0;
 
-        chart.data.labels = [];
-        chart.data.datasets.forEach(d => d.data = []);
+        resetChart();
 
-        function step() {
-            if (frame >= totalFrames) {
+        function addFrame(index) {
+            const currentTime = Number(time[index]);
+            const currentPos = positions[index];
+            const currentAng = angles[index];
+
+            chart.data.datasets[0].data.push({ x: currentTime, y: currentPos });
+            chart.data.datasets[1].data.push({ x: currentTime, y: currentAng });
+            draw(type, currentPos, currentAng);
+        }
+
+        function step(timestamp) {
+            if (startTimestamp === null) {
+                startTimestamp = timestamp;
+            }
+
+            const elapsedSeconds = (timestamp - startTimestamp) / 1000;
+            const targetTime = firstTime + elapsedSeconds;
+
+            while (frame < totalFrames && Number(time[frame]) <= targetTime) {
+                addFrame(frame);
+                frame++;
+            }
+
+            chart.update('none');
+
+            if (frame >= totalFrames || targetTime >= lastTime) {
+                while (frame < totalFrames) {
+                    addFrame(frame);
+                    frame++;
+                }
+                chart.update('none');
                 isRunning = false;
                 startBtn.disabled = false;
                 return;
             }
 
-            const currentPos = positions[frame];
-            const currentAng = angles[frame];
-
-            chart.data.labels.push(time[frame].toFixed(2));
-            chart.data.datasets[0].data.push(currentPos);
-            chart.data.datasets[1].data.push(currentAng);
-
-            if (chart.data.labels.length > 100) {
-                chart.data.labels.shift();
-                chart.data.datasets.forEach(d => d.data.shift());
-            }
-            chart.update('none');
-
-            draw(type, currentPos, currentAng);
-
-            frame++;
             animationId = requestAnimationFrame(step);
         }
 
         cancelAnimationFrame(animationId);
-        step();
+        animationId = requestAnimationFrame(step);
     }
 
     function draw(type, pos, ang) {
