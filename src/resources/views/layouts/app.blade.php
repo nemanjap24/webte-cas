@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
     <title>@yield('title', 'Webte CAS')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-200 antialiased min-h-screen">
+<body class="bg-slate-950 text-slate-200 antialiased min-h-screen">
     <nav class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
         <div class="mx-auto max-w-6xl px-6 py-4">
             <div class="flex items-center justify-between">
