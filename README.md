@@ -1,3 +1,100 @@
+# WEBTE2 CAS Setup Guide
+
+This project can be run locally with Docker Compose or deployed manually on a Linux server.
+
+## Docker Compose Local Setup
+
+The Docker `app` image includes PHP, Composer, GNU Octave, the Octave control package, Node.js, and npm. You do not need to install Node.js or npm on your host machine when using Docker.
+
+From the repository root:
+
+```bash
+docker compose up -d --build
+```
+
+Install PHP dependencies:
+
+```bash
+docker compose exec app composer install
+```
+
+Create the environment file if it does not exist:
+
+```bash
+cp src/.env.example src/.env
+```
+
+Make sure `src/.env` uses the Docker database and Octave settings:
+
+```env
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=webte_cas
+DB_USERNAME=webte
+DB_PASSWORD=secret
+
+SESSION_DRIVER=file
+
+CAS_API_KEY=super-secret-key
+CAS_EXECUTABLE_PATH=/usr/bin/octave
+CAS_SLOWDOWN_COEFFICIENT=1.0
+ANIMATION_COUNT_INTERVAL_MINUTES=10
+```
+
+Prepare Laravel:
+
+```bash
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate
+docker compose exec app php artisan config:clear
+```
+
+Install frontend dependencies and build assets inside the container:
+
+```bash
+docker compose run --rm app npm install
+docker compose run --rm app npm run build
+```
+
+If `src/public/hot` exists from Vite development mode, remove it:
+
+```bash
+docker compose exec app rm -f public/hot
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+phpMyAdmin is available at:
+
+```text
+http://localhost:8080
+```
+
+Useful Docker commands:
+
+```bash
+docker compose exec app php artisan test
+docker compose exec app octave --version
+docker compose run --rm app node --version
+docker compose run --rm app npm --version
+```
+
+If `src/node_modules` was previously installed on the host operating system, native packages may not match the Linux container. Reinstall dependencies inside Docker:
+
+```bash
+docker compose run --rm app npm install
+docker compose run --rm app npm run build
+```
+
+---
+
 # Server Deployment Guide (Manual Installation)
 
 This guide provides step-by-step instructions for deploying the application on a Linux server (Ubuntu/Debian) without using Docker.
