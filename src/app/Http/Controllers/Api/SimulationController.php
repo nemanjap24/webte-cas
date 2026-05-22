@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CasLog;
+use App\Models\CasSession;
 use App\Services\Simulation\SimulationService;
 use App\Services\Statistics\AnimationUsageService;
 use Illuminate\Http\JsonResponse;
@@ -19,27 +20,42 @@ class SimulationController extends Controller
         $validated = $request->validate([
             'target_position' => ['nullable', 'numeric'],
             'session_token' => ['nullable', 'string', 'max:255'],
+            'reset' => ['nullable', 'boolean'],
         ]);
 
-        $targetPosition = (float) ($validated['target_position'] ?? 0.2);
+        $sessionToken = $validated['session_token'] ?? $request->cookie('cas_session_token');
+        $session = null;
+        $initialState = null;
 
-        $result = $simulationService->runInvertedPendulum($targetPosition);
+        if ($sessionToken) {
+            $session = CasSession::firstOrCreate(['session_token' => $sessionToken]);
+            if (empty($validated['reset'])) {
+                $initialState = $session->sim_state['pendulum'] ?? null;
+            } else {
+                $currentSimState = $session->sim_state ?? [];
+                $currentSimState['pendulum'] = null;
+                $session->update(['sim_state' => $currentSimState]);
+            }
+        }
+
+        $targetPosition = (float) ($validated['target_position'] ?? 0.2);
+        $result = $simulationService->runInvertedPendulum($targetPosition, $initialState);
 
         if ($result['success']) {
-            $userToken = $request->cookie('cas_session_token');
+            if ($session) {
+                $newState = $session->sim_state ?? [];
+                $newState['pendulum'] = $result['data']['final_state'];
+                $session->update(['sim_state' => $newState]);
+            }
 
-            if ($userToken) {
-                $animationUsageService->record(
-                    $userToken,
-                    'inverted-pendulum',
-                    $request->ip()
-                );
+            if ($sessionToken) {
+                $animationUsageService->record($sessionToken, 'inverted-pendulum', $request->ip());
             }
         }
 
         CasLog::create([
-            'session_token' => $validated['session_token'] ?? $request->cookie('webte-cas-session'),
-            'command' => 'SIMULATION: inverted-pendulum target_position=' . $targetPosition,
+            'session_token' => $sessionToken,
+            'command' => 'SIMULATION: inverted-pendulum target_position=' . $targetPosition . ($initialState ? ' (continued)' : ''),
             'output' => $result['success'] ? json_encode($result['data']) : null,
             'is_success' => $result['success'],
             'error_message' => $result['error'],
@@ -57,27 +73,42 @@ class SimulationController extends Controller
         $validated = $request->validate([
             'target_position' => ['nullable', 'numeric'],
             'session_token' => ['nullable', 'string', 'max:255'],
+            'reset' => ['nullable', 'boolean'],
         ]);
 
-        $targetPosition = (float) ($validated['target_position'] ?? 0.25);
+        $sessionToken = $validated['session_token'] ?? $request->cookie('cas_session_token');
+        $session = null;
+        $initialState = null;
 
-        $result = $simulationService->runBallBeam($targetPosition);
+        if ($sessionToken) {
+            $session = CasSession::firstOrCreate(['session_token' => $sessionToken]);
+            if (empty($validated['reset'])) {
+                $initialState = $session->sim_state['ball'] ?? null;
+            } else {
+                $currentSimState = $session->sim_state ?? [];
+                $currentSimState['ball'] = null;
+                $session->update(['sim_state' => $currentSimState]);
+            }
+        }
+
+        $targetPosition = (float) ($validated['target_position'] ?? 0.25);
+        $result = $simulationService->runBallBeam($targetPosition, $initialState);
 
         if ($result['success']) {
-            $userToken = $request->cookie('cas_session_token');
+            if ($session) {
+                $newState = $session->sim_state ?? [];
+                $newState['ball'] = $result['data']['final_state'];
+                $session->update(['sim_state' => $newState]);
+            }
 
-            if ($userToken) {
-                $animationUsageService->record(
-                    $userToken,
-                    'ball-beam',
-                    $request->ip()
-                );
+            if ($sessionToken) {
+                $animationUsageService->record($sessionToken, 'ball-beam', $request->ip());
             }
         }
 
         CasLog::create([
-            'session_token' => $validated['session_token'] ?? $request->cookie('webte-cas-session'),
-            'command' => 'SIMULATION: ball-beam target_position=' . $targetPosition,
+            'session_token' => $sessionToken,
+            'command' => 'SIMULATION: ball-beam target_position=' . $targetPosition . ($initialState ? ' (continued)' : ''),
             'output' => $result['success'] ? json_encode($result['data']) : null,
             'is_success' => $result['success'],
             'error_message' => $result['error'],

@@ -351,8 +351,8 @@
     <script type="text/php">
         if (isset($pdf)) {
             $font = $fontMetrics->getFont("Helvetica", "normal");
-            $pdf->page_text(34, 18, "{{ $title }}", $font, 10, [0, 0, 0]);
-            $pdf->page_text(500, 820, "Page {PAGE_NUM}/{PAGE_COUNT}", $font, 10, [0, 0, 0]);
+            $pdf->page_text(34, 18, "{{ $title }}", $font, 10, [0.4, 0.4, 0.4]);
+            $pdf->page_text(520, 810, "{PAGE_NUM}/{PAGE_COUNT}", $font, 10, [0.4, 0.4, 0.4]);
         }
     </script>
 </body>

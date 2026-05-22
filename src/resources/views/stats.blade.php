@@ -14,27 +14,27 @@
             <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-cyan-400/10 blur-3xl transition group-hover:bg-cyan-400/20"></div>
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Inverted Pendulum</h3>
             <p class="mt-2 text-5xl font-black text-white">{{ $pendulum_count }}</p>
-            <p class="mt-1 text-xs text-slate-400">Validated unique sessions</p>
+            <p class="mt-1 text-xs text-slate-400">{{ __('messages.unique_sessions') }}</p>
         </div>
         
         <div class="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-emerald-400/10 blur-3xl transition group-hover:bg-emerald-400/20"></div>
             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Ball & Beam</h3>
             <p class="mt-2 text-5xl font-black text-white">{{ $ball_count }}</p>
-            <p class="mt-1 text-xs text-slate-400">Validated unique sessions</p>
+            <p class="mt-1 text-xs text-slate-400">{{ __('messages.unique_sessions') }}</p>
         </div>
     </div>
 
     <div class="mt-12">
-        <h2 class="text-xl font-bold text-white mb-6">Recent Activity Details</h2>
+        <h2 class="text-xl font-bold text-white mb-6">{{ __('messages.recent_activity') }}</h2>
         <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm text-slate-300">
                     <thead class="bg-white/5 border-b border-white/10 text-xs uppercase tracking-wider text-slate-500">
                         <tr>
-                            <th class="px-6 py-4 font-semibold">Time</th>
-                            <th class="px-6 py-4 font-semibold">Animation</th>
-                            <th class="px-6 py-4 font-semibold">Location</th>
+                            <th class="px-6 py-4 font-semibold">{{ __('messages.time') }}</th>
+                            <th class="px-6 py-4 font-semibold">{{ __('messages.animation') }}</th>
+                            <th class="px-6 py-4 font-semibold">{{ __('messages.location') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
@@ -54,14 +54,14 @@
                                 @if($item->city || $item->country)
                                     <span class="text-white">{{ $item->city ?? 'Unknown' }}</span>, <span class="text-slate-500">{{ $item->country ?? 'Unknown' }}</span>
                                 @else
-                                    <span class="text-slate-500 italic">Location data unavailable</span>
+                                    <span class="text-slate-500 italic">{{ __('messages.location_unavailable') }}</span>
                                 @endif
                             </td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="3" class="px-6 py-20 text-center italic text-slate-500">
-                                No activity recorded yet.
+                                {{ __('messages.no_stats') }}
                             </td>
                         </tr>
                         @endforelse

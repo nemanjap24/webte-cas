@@ -9,6 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DocsController extends Controller
 {
+    public function index(): \Illuminate\Contracts\View\View
+    {
+        return view('docs.swagger');
+    }
+
     public function openapi(): JsonResponse
     {
         return response()->json($this->spec());
@@ -22,7 +27,9 @@ class DocsController extends Controller
         $pdf = Pdf::loadView('docs.api-pdf', [
             'title' => $title,
             'spec' => $spec,
-        ])->setPaper('a4', 'portrait');
+        ])
+        ->setPaper('a4', 'portrait')
+        ->setOption('isPhpEnabled', true);
 
         return $pdf->download('webte2-cas-api-documentation.pdf');
     }
@@ -105,6 +112,11 @@ class DocsController extends Controller
                                 'example' => 'test-user-1',
                                 'description' => 'Session token used for preserving simulation/CAS context.',
                             ],
+                            'reset' => [
+                                'type' => 'boolean',
+                                'example' => false,
+                                'description' => 'Reset simulation state to zero.',
+                            ],
                         ],
                         'required' => ['target_position'],
                     ],
@@ -123,6 +135,11 @@ class DocsController extends Controller
                                 'example' => 'test-user-1',
                                 'description' => 'Session token used for preserving simulation/CAS context.',
                             ],
+                            'reset' => [
+                                'type' => 'boolean',
+                                'example' => false,
+                                'description' => 'Reset simulation state to zero.',
+                            ],
                         ],
                         'required' => ['target_position'],
                     ],
@@ -140,21 +157,21 @@ class DocsController extends Controller
                                     'time' => [
                                         'type' => 'array',
                                         'items' => ['type' => 'number'],
-                                        'example' => [0, 0.05, 0.10, 0.15],
-                                        'description' => 'Simulation time values.',
                                     ],
                                     'output' => [
                                         'type' => 'array',
                                         'items' => ['type' => 'number'],
-                                        'example' => [0, 0.08, 0.16, 0.20],
-                                        'description' => 'Primary output values for graph rendering.',
+                                    ],
+                                    'final_state' => [
+                                        'type' => 'array',
+                                        'items' => ['type' => 'number'],
+                                        'description' => 'State vector at the end of simulation.',
                                     ],
                                 ],
                             ],
                             'error' => [
                                 'type' => 'string',
                                 'nullable' => true,
-                                'example' => null,
                             ],
                         ],
                     ],
@@ -184,53 +201,30 @@ class DocsController extends Controller
                         ],
                     ],
 
-                    'StatisticsSummaryItem' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'animation_type' => ['type' => 'string', 'example' => 'inverted-pendulum'],
-                            'count' => ['type' => 'integer', 'example' => 5],
-                        ],
-                    ],
-
-                    'StatisticsDetailItem' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'animation_type' => ['type' => 'string', 'example' => 'ball-beam'],
-                            'user_token' => ['type' => 'string', 'example' => 'anon-user-123'],
-                            'city' => ['type' => 'string', 'nullable' => true, 'example' => null],
-                            'country' => ['type' => 'string', 'nullable' => true, 'example' => null],
-                            'used_at' => ['type' => 'string', 'format' => 'date-time', 'example' => '2026-05-21T16:05:00Z'],
-                        ],
-                    ],
-
                     'StatisticsResponse' => [
                         'type' => 'object',
                         'properties' => [
                             'summary' => [
                                 'type' => 'array',
                                 'items' => [
-                                    '$ref' => '#/components/schemas/StatisticsSummaryItem',
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'animation_type' => ['type' => 'string'],
+                                        'count' => ['type' => 'integer'],
+                                    ],
                                 ],
                             ],
                             'details' => [
                                 'type' => 'array',
                                 'items' => [
-                                    '$ref' => '#/components/schemas/StatisticsDetailItem',
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'animation_type' => ['type' => 'string'],
+                                        'city' => ['type' => 'string', 'nullable' => true],
+                                        'country' => ['type' => 'string', 'nullable' => true],
+                                        'used_at' => ['type' => 'string', 'format' => 'date-time'],
+                                    ],
                                 ],
-                            ],
-                            'interval_minutes' => [
-                                'type' => 'integer',
-                                'example' => 10,
-                            ],
-                        ],
-                    ],
-
-                    'ErrorResponse' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'message' => [
-                                'type' => 'string',
-                                'example' => 'Validation or execution error.',
                             ],
                         ],
                     ],
@@ -244,206 +238,71 @@ class DocsController extends Controller
                     'post' => [
                         'summary' => 'Execute a CAS command',
                         'tags' => ['CAS'],
-                        'requestBody' => [
-                            'required' => true,
-                            'description' => 'CAS command payload.',
-                            'content' => [
-                                'application/json' => [
-                                    'schema' => [
-                                        '$ref' => '#/components/schemas/CasExecuteRequest',
-                                    ],
-                                    'example' => [
-                                        'command' => 'a=1',
-                                        'session_token' => 'test-user-1',
-                                    ],
-                                ],
-                            ],
-                        ],
                         'responses' => [
-                            '200' => [
-                                'description' => 'CAS command executed successfully',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/CasExecuteResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            '422' => [
-                                'description' => 'Validation or execution error',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/ErrorResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
+                            '200' => ['description' => 'OK'],
                         ],
                     ],
                 ],
-
-                '/logs' => [
-                    'get' => [
-                        'summary' => 'Retrieve CAS request logs',
-                        'tags' => ['Logs'],
-                        'parameters' => [
-                            [
-                                'name' => 'session_token',
-                                'in' => 'query',
-                                'required' => false,
-                                'description' => 'Optional session token filter.',
-                                'schema' => ['type' => 'string'],
-                            ],
-                        ],
-                        'responses' => [
-                            '200' => [
-                                'description' => 'Paginated log list',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/LogsResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-
-                '/logs/export' => [
-                    'get' => [
-                        'summary' => 'Export CAS logs to CSV',
-                        'tags' => ['Logs'],
-                        'parameters' => [
-                            [
-                                'name' => 'session_token',
-                                'in' => 'query',
-                                'required' => false,
-                                'description' => 'Optional session token filter.',
-                                'schema' => ['type' => 'string'],
-                            ],
-                        ],
-                        'responses' => [
-                            '200' => [
-                                'description' => 'CSV file download',
-                                'content' => [
-                                    'text/csv' => [
-                                        'schema' => [
-                                            'type' => 'string',
-                                            'format' => 'binary',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-
                 '/simulations/inverted-pendulum' => [
                     'post' => [
                         'summary' => 'Run inverted pendulum simulation',
                         'tags' => ['Simulations'],
-                        'requestBody' => [
-                            'required' => true,
-                            'description' => 'Parameters for inverted pendulum simulation.',
-                            'content' => [
-                                'application/json' => [
-                                    'schema' => [
-                                        '$ref' => '#/components/schemas/InvertedPendulumRequest',
-                                    ],
-                                    'example' => [
-                                        'target_position' => 0.2,
-                                        'session_token' => 'test-user-1',
-                                    ],
-                                ],
-                            ],
-                        ],
                         'responses' => [
-                            '200' => [
-                                'description' => 'Simulation output',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/SimulationResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            '422' => [
-                                'description' => 'Validation or simulation error',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/ErrorResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
+                            '200' => ['description' => 'OK'],
                         ],
                     ],
                 ],
-
                 '/simulations/ball-beam' => [
                     'post' => [
                         'summary' => 'Run ball and beam simulation',
                         'tags' => ['Simulations'],
-                        'requestBody' => [
-                            'required' => true,
-                            'description' => 'Parameters for ball and beam simulation.',
-                            'content' => [
-                                'application/json' => [
-                                    'schema' => [
-                                        '$ref' => '#/components/schemas/BallBeamRequest',
-                                    ],
-                                    'example' => [
-                                        'target_position' => 0.25,
-                                        'session_token' => 'test-user-1',
-                                    ],
-                                ],
-                            ],
-                        ],
                         'responses' => [
-                            '200' => [
-                                'description' => 'Simulation output',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/SimulationResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            '422' => [
-                                'description' => 'Validation or simulation error',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/ErrorResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
+                            '200' => ['description' => 'OK'],
                         ],
                     ],
                 ],
-
+                '/logs' => [
+                    'get' => [
+                        'summary' => 'Retrieve CAS logs',
+                        'tags' => ['Logs'],
+                        'responses' => [
+                            '200' => ['description' => 'OK'],
+                        ],
+                    ],
+                ],
+                '/logs/export' => [
+                    'get' => [
+                        'summary' => 'Export logs to CSV',
+                        'tags' => ['Logs'],
+                        'responses' => [
+                            '200' => ['description' => 'CSV File'],
+                        ],
+                    ],
+                ],
                 '/statistics' => [
                     'get' => [
-                        'summary' => 'Retrieve animation usage statistics',
+                        'summary' => 'Retrieve usage statistics',
                         'tags' => ['Statistics'],
                         'responses' => [
-                            '200' => [
-                                'description' => 'Statistics response',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            '$ref' => '#/components/schemas/StatisticsResponse',
-                                        ],
-                                    ],
-                                ],
-                            ],
+                            '200' => ['description' => 'OK'],
+                        ],
+                    ],
+                ],
+                '/docs/openapi' => [
+                    'get' => [
+                        'summary' => 'Retrieve OpenAPI spec (JSON)',
+                        'tags' => ['Documentation'],
+                        'responses' => [
+                            '200' => ['description' => 'OK'],
+                        ],
+                    ],
+                ],
+                '/docs/pdf' => [
+                    'get' => [
+                        'summary' => 'Download API documentation (PDF)',
+                        'tags' => ['Documentation'],
+                        'responses' => [
+                            '200' => ['description' => 'PDF File'],
                         ],
                     ],
                 ],

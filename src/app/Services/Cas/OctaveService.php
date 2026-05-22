@@ -20,7 +20,12 @@ class OctaveService
         $process->setTimeout(15);
         $process->run();
 
-        usleep(config('cas.slowdown_ms') * 1000);
+        // Server-side slowdown as per Requirement #4
+        $coefficient = config('cas.slowdown_coefficient', 1.0);
+        if ($coefficient > 0) {
+            // Base delay of 100ms multiplied by the coefficient
+            usleep((int) (100000 * $coefficient));
+        }
 
         if (! $process->isSuccessful()) {
             return [

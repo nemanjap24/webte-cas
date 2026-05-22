@@ -20,7 +20,7 @@
             <table class="w-full text-left text-sm text-slate-300">
                 <thead class="bg-white/5 border-b border-white/10 text-xs uppercase tracking-wider text-slate-500">
                     <tr>
-                        <th class="px-6 py-4 font-semibold">Timestamp</th>
+                        <th class="px-6 py-4 font-semibold">{{ __('messages.time') }}</th>
                         <th class="px-6 py-4 font-semibold">Session</th>
                         <th class="px-6 py-4 font-semibold">Command</th>
                         <th class="px-6 py-4 font-semibold">Status</th>
@@ -44,12 +44,12 @@
                             @if($log->is_success)
                                 <span class="inline-flex items-center gap-1.5 text-emerald-400">
                                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                                    Success
+                                    {{ __('messages.status_success') }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 text-red-400" title="{{ $log->error_message }}">
                                     <span class="h-1.5 w-1.5 rounded-full bg-red-400"></span>
-                                    Error
+                                    {{ __('messages.status_error') }}
                                 </span>
                             @endif
                         </td>
@@ -57,7 +57,7 @@
                     @empty
                     <tr>
                         <td colspan="4" class="px-6 py-20 text-center italic text-slate-500">
-                            No interactions recorded yet. Go to the Console or Animations to generate logs.
+                            {{ __('messages.no_logs') }}
                         </td>
                     </tr>
                     @endforelse

@@ -51,6 +51,8 @@ Route::get('/stats', function () {
     return view('stats', $stats);
 })->name('stats');
 
+Route::get('/docs', [\App\Http\Controllers\Api\DocsController::class, 'index'])->name('docs');
+
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'sk'])) {
         Session::put('locale', $locale);
