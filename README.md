@@ -2,6 +2,19 @@
 
 This project can be run locally with Docker Compose or deployed manually on a Linux server.
 
+## Project Overview
+
+WEBTE2 CAS is a Laravel application for CAS command execution and dynamic system simulations. It includes:
+
+- REST API protected by an API key.
+- Octave-backed CAS command execution with session state.
+- Inverted pendulum and ball-and-beam simulations.
+- Synchronized animation and chart rendering.
+- CAS request logging and CSV export.
+- Animation usage statistics.
+- Slovak and English UI.
+- OpenAPI documentation and dynamically generated PDF API documentation.
+
 ## Docker Compose Local Setup
 
 The Docker `app` image includes PHP, Composer, GNU Octave, the Octave control package, Node.js, and npm. You do not need to install Node.js or npm on your host machine when using Docker.
@@ -92,6 +105,62 @@ If `src/node_modules` was previously installed on the host operating system, nat
 docker compose run --rm app npm install
 docker compose run --rm app npm run build
 ```
+
+## Team Task Distribution
+
+The project work was divided between two team members: Polo and Dima. The split separates backend/infrastructure responsibilities from frontend/presentation responsibilities.
+
+### Polo
+
+Polo was responsible for the backend and infrastructure part of the project:
+
+- Laravel backend setup, routes, controllers, and base application architecture.
+- CAS integration through the REST API, including command execution and response handling.
+- API key/token protection for secured endpoints.
+- Persistence of variables between sequential CAS requests.
+- Docker and Docker Compose setup for the application, database, and CAS environment.
+- Logging of CAS requests, including date, time, command, success status, and error state.
+- CSV export of request logs.
+- OpenAPI documentation and dynamic PDF export of API documentation.
+- Backend logic for animation usage statistics and database persistence.
+
+### Dima
+
+Dima was responsible for the frontend and presentation part of the project:
+
+- User interface for entering CAS commands and displaying results.
+- Syntax highlighting in the command input area.
+- Slovak and English user interface.
+- Language switching while keeping the user on the same subpage.
+- Responsive layout for desktop and mobile devices.
+- Inverted pendulum graph and animation.
+- Ball-and-beam graph and animation.
+- Synchronization between simulation animation and chart rendering.
+- Display of animation usage statistics in the interface.
+- Design polish, navigation, and overall user experience.
+
+### Shared Responsibilities
+
+Both team members worked together on integration and final delivery:
+
+- Agreement on API contracts before connecting frontend and backend features.
+- End-to-end testing of command execution, response display, logging, CSV export, statistics, animations, and documentation.
+- Technical documentation, including server configuration, installed packages, and team task distribution.
+- Commit history maintenance so each team member had meaningful contributions.
+- Final Docker testing, deployment preparation, and submission checks.
+
+### Responsibility Matrix
+
+| Area | Polo | Dima |
+|---|---|---|
+| Backend API | Main responsibility | Testing support |
+| CAS integration | Main responsibility | Not primary responsibility |
+| Docker and deployment | Main responsibility | Verification support |
+| Frontend UI | Consultation | Main responsibility |
+| Animations and charts | API support | Main responsibility |
+| Bilingual UI and responsive design | Backend support | Main responsibility |
+| Logs, CSV, OpenAPI, PDF | Main responsibility | UI support where needed |
+| Documentation and testing | Shared responsibility | Shared responsibility |
 
 ---
 
