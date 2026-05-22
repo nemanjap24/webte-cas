@@ -251,10 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
             chart.data.datasets[0].data.push(currentPos);
             chart.data.datasets[1].data.push(currentAng);
 
-            if (chart.data.labels.length > 100) {
-                chart.data.labels.shift();
-                chart.data.datasets.forEach(d => d.data.shift());
-            }
             chart.update('none');
 
             draw(type, currentPos, currentAng);
