@@ -35,6 +35,13 @@ return [
     'lastBatch' => 'Posledné vykonanie',
     'noBatch' => 'Zatiaľ nebol vykonaný žiadny príkaz. Zadajte príkazy a stlačte Spustiť.',
     'back' => 'Späť na domov',
+    'console_errors' => [
+        'server' => 'Server nedokázal spracovať príkaz.',
+        'validation' => 'Pred spustením zadajte platný príkaz Octave.',
+        'undefined_variable' => 'Premenná ":name" nie je v tejto relácii definovaná.',
+        'parse' => 'Príkaz obsahuje syntaktickú chybu. Skontrolujte výraz a skúste to znova.',
+        'generic' => 'Príkaz sa nepodarilo vykonať.',
+    ],
 
     // Navigácia
     'nav' => [

@@ -98,6 +98,33 @@ class DocsController extends Controller
                         ],
                     ],
 
+                    'ErrorResponse' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'message' => [
+                                'type' => 'string',
+                                'example' => 'Unauthorized',
+                            ],
+                        ],
+                    ],
+
+                    'ValidationErrorResponse' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'message' => [
+                                'type' => 'string',
+                                'example' => 'The command field is required.',
+                            ],
+                            'errors' => [
+                                'type' => 'object',
+                                'additionalProperties' => [
+                                    'type' => 'array',
+                                    'items' => ['type' => 'string'],
+                                ],
+                            ],
+                        ],
+                    ],
+
                     'InvertedPendulumRequest' => [
                         'type' => 'object',
                         'properties' => [
@@ -161,6 +188,27 @@ class DocsController extends Controller
                                     'output' => [
                                         'type' => 'array',
                                         'items' => ['type' => 'number'],
+                                        'description' => 'Generic simulation output values, when present.',
+                                    ],
+                                    'cart_position' => [
+                                        'type' => 'array',
+                                        'items' => ['type' => 'number'],
+                                        'description' => 'Inverted pendulum cart position values in metres.',
+                                    ],
+                                    'pendulum_angle' => [
+                                        'type' => 'array',
+                                        'items' => ['type' => 'number'],
+                                        'description' => 'Inverted pendulum angle values in radians.',
+                                    ],
+                                    'ball_position' => [
+                                        'type' => 'array',
+                                        'items' => ['type' => 'number'],
+                                        'description' => 'Ball position values in metres.',
+                                    ],
+                                    'beam_angle' => [
+                                        'type' => 'array',
+                                        'items' => ['type' => 'number'],
+                                        'description' => 'Beam angle values in radians.',
                                     ],
                                     'final_state' => [
                                         'type' => 'array',
@@ -210,7 +258,7 @@ class DocsController extends Controller
                                     'type' => 'object',
                                     'properties' => [
                                         'animation_type' => ['type' => 'string'],
-                                        'count' => ['type' => 'integer'],
+                                        'usage_count' => ['type' => 'integer'],
                                     ],
                                 ],
                             ],
@@ -219,6 +267,7 @@ class DocsController extends Controller
                                 'items' => [
                                     'type' => 'object',
                                     'properties' => [
+                                        'user_token' => ['type' => 'string'],
                                         'animation_type' => ['type' => 'string'],
                                         'city' => ['type' => 'string', 'nullable' => true],
                                         'country' => ['type' => 'string', 'nullable' => true],
@@ -226,6 +275,7 @@ class DocsController extends Controller
                                     ],
                                 ],
                             ],
+                            'interval_minutes' => ['type' => 'integer'],
                         ],
                     ],
                 ],
@@ -238,8 +288,48 @@ class DocsController extends Controller
                     'post' => [
                         'summary' => 'Execute a CAS command',
                         'tags' => ['CAS'],
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => ['$ref' => '#/components/schemas/CasExecuteRequest'],
+                                    'example' => [
+                                        'command' => 'a=1+1',
+                                        'session_token' => 'test-user-1',
+                                    ],
+                                ],
+                            ],
+                        ],
                         'responses' => [
-                            '200' => ['description' => 'OK'],
+                            '200' => [
+                                'description' => 'Command executed successfully.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/CasExecuteResponse'],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Missing or invalid API key.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/ErrorResponse'],
+                                    ],
+                                ],
+                            ],
+                            '422' => [
+                                'description' => 'Validation or CAS execution error.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'oneOf' => [
+                                                ['$ref' => '#/components/schemas/CasExecuteResponse'],
+                                                ['$ref' => '#/components/schemas/ValidationErrorResponse'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -247,8 +337,49 @@ class DocsController extends Controller
                     'post' => [
                         'summary' => 'Run inverted pendulum simulation',
                         'tags' => ['Simulations'],
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => ['$ref' => '#/components/schemas/InvertedPendulumRequest'],
+                                    'example' => [
+                                        'target_position' => 0.2,
+                                        'session_token' => 'test-user-1',
+                                        'reset' => false,
+                                    ],
+                                ],
+                            ],
+                        ],
                         'responses' => [
-                            '200' => ['description' => 'OK'],
+                            '200' => [
+                                'description' => 'Simulation completed successfully.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/SimulationResponse'],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Missing or invalid API key.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/ErrorResponse'],
+                                    ],
+                                ],
+                            ],
+                            '422' => [
+                                'description' => 'Validation or simulation error.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'oneOf' => [
+                                                ['$ref' => '#/components/schemas/SimulationResponse'],
+                                                ['$ref' => '#/components/schemas/ValidationErrorResponse'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -256,8 +387,49 @@ class DocsController extends Controller
                     'post' => [
                         'summary' => 'Run ball and beam simulation',
                         'tags' => ['Simulations'],
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => ['$ref' => '#/components/schemas/BallBeamRequest'],
+                                    'example' => [
+                                        'target_position' => 0.25,
+                                        'session_token' => 'test-user-1',
+                                        'reset' => false,
+                                    ],
+                                ],
+                            ],
+                        ],
                         'responses' => [
-                            '200' => ['description' => 'OK'],
+                            '200' => [
+                                'description' => 'Simulation completed successfully.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/SimulationResponse'],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Missing or invalid API key.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/ErrorResponse'],
+                                    ],
+                                ],
+                            ],
+                            '422' => [
+                                'description' => 'Validation or simulation error.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'oneOf' => [
+                                                ['$ref' => '#/components/schemas/SimulationResponse'],
+                                                ['$ref' => '#/components/schemas/ValidationErrorResponse'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -265,8 +437,32 @@ class DocsController extends Controller
                     'get' => [
                         'summary' => 'Retrieve CAS logs',
                         'tags' => ['Logs'],
+                        'parameters' => [
+                            [
+                                'name' => 'session_token',
+                                'in' => 'query',
+                                'required' => false,
+                                'schema' => ['type' => 'string'],
+                                'description' => 'Optional session token filter.',
+                            ],
+                        ],
                         'responses' => [
-                            '200' => ['description' => 'OK'],
+                            '200' => [
+                                'description' => 'Paginated CAS request logs.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/LogsResponse'],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Missing or invalid API key.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/ErrorResponse'],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -274,8 +470,35 @@ class DocsController extends Controller
                     'get' => [
                         'summary' => 'Export logs to CSV',
                         'tags' => ['Logs'],
+                        'parameters' => [
+                            [
+                                'name' => 'session_token',
+                                'in' => 'query',
+                                'required' => false,
+                                'schema' => ['type' => 'string'],
+                                'description' => 'Optional session token filter.',
+                            ],
+                        ],
                         'responses' => [
-                            '200' => ['description' => 'CSV File'],
+                            '200' => [
+                                'description' => 'CSV file containing CAS logs.',
+                                'content' => [
+                                    'text/csv' => [
+                                        'schema' => [
+                                            'type' => 'string',
+                                            'format' => 'binary',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Missing or invalid API key.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/ErrorResponse'],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -284,7 +507,22 @@ class DocsController extends Controller
                         'summary' => 'Retrieve usage statistics',
                         'tags' => ['Statistics'],
                         'responses' => [
-                            '200' => ['description' => 'OK'],
+                            '200' => [
+                                'description' => 'Animation usage statistics.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/StatisticsResponse'],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Missing or invalid API key.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/ErrorResponse'],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -292,8 +530,18 @@ class DocsController extends Controller
                     'get' => [
                         'summary' => 'Retrieve OpenAPI spec (JSON)',
                         'tags' => ['Documentation'],
+                        'security' => [],
                         'responses' => [
-                            '200' => ['description' => 'OK'],
+                            '200' => [
+                                'description' => 'OpenAPI JSON document.',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -301,8 +549,19 @@ class DocsController extends Controller
                     'get' => [
                         'summary' => 'Download API documentation (PDF)',
                         'tags' => ['Documentation'],
+                        'security' => [],
                         'responses' => [
-                            '200' => ['description' => 'PDF File'],
+                            '200' => [
+                                'description' => 'Dynamically generated API documentation PDF.',
+                                'content' => [
+                                    'application/pdf' => [
+                                        'schema' => [
+                                            'type' => 'string',
+                                            'format' => 'binary',
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],

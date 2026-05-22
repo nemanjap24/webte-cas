@@ -26,6 +26,11 @@
                 <form id="cas-form" 
                       data-session-token="{{ $sessionToken }}" 
                       data-api-key="{{ $apiKey }}"
+                      data-error-server="{{ __('messages.console_errors.server') }}"
+                      data-error-validation="{{ __('messages.console_errors.validation') }}"
+                      data-error-undefined-variable="{{ __('messages.console_errors.undefined_variable') }}"
+                      data-error-parse="{{ __('messages.console_errors.parse') }}"
+                      data-error-generic="{{ __('messages.console_errors.generic') }}"
                       class="flex flex-col gap-3">
                     
                     <div id="editor-container" class="h-80 w-full rounded-xl border border-white/15 bg-slate-900 overflow-hidden ring-cyan-300 focus-within:ring"></div>

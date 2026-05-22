@@ -72,6 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
         labels: {
             run: runBtn.dataset.labelRun,
             running: runBtn.dataset.labelRunning
+        },
+        errors: {
+            server: casForm.dataset.errorServer,
+            validation: casForm.dataset.errorValidation,
+            undefinedVariable: casForm.dataset.errorUndefinedVariable,
+            parse: casForm.dataset.errorParse,
+            generic: casForm.dataset.errorGeneric
         }
     };
 
@@ -133,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || data.error || 'Server error');
+                throw new Error(formatApiError(data));
             }
 
             const row = document.createElement('div');
@@ -146,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastBatchDiv.replaceChildren(row);
             
         } catch (err) {
-            errorDiv.innerText = err.message;
+            errorDiv.innerText = err.message || config.errors.generic;
             errorDiv.classList.remove('hidden');
         } finally {
             runBtn.disabled = false;
@@ -158,5 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    function formatApiError(data) {
+        if (data?.errors) {
+            return config.errors.validation;
+        }
+
+        const rawMessage = data?.error || data?.message || '';
+        const undefinedVariable = rawMessage.match(/error:\s*'([^']+)'\s+undefined/i);
+        if (undefinedVariable) {
+            return config.errors.undefinedVariable.replace(':name', undefinedVariable[1]);
+        }
+
+        if (/parse error|syntax error/i.test(rawMessage)) {
+            return config.errors.parse;
+        }
+
+        return rawMessage ? `${config.errors.generic} ${rawMessage}` : config.errors.server;
     }
 });
